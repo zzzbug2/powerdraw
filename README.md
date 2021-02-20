@@ -1,9 +1,9 @@
-#powerdraw bash script
+# powerdraw bash script
 A very tiny script to view battery information and temperatures.
 
 [alt text](https://www.github.com/1ryuk/powerdraw/powerdraw.png)
 
-##Usage
+## Usage
 
 ```
 git clone https://www.github.com/1ryuk/powerdraw/
