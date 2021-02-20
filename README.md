@@ -9,7 +9,7 @@ A very tiny script to view battery information and temperatures.
 git clone https://www.github.com/1ryuk/powerdraw/
 chmod +x powerdraw
 watch ./powerdraw
-		OR
+OR
 mv powerdraw /bin/
 watch powerdraw
 
