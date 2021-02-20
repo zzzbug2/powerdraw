@@ -1,0 +1,14 @@
+# powerdraw bash script
+A very tiny script to view battery information and temperatures.
+
+## Usage
+
+```
+git clone https://www.github.com/1ryuk/powerdraw/
+chmod +x powerdraw
+watch ./powerdraw
+		OR
+mv powerdraw /bin/
+powerdraw
+
+```
