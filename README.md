@@ -7,6 +7,7 @@ A very tiny script to view battery information and temperatures.
 ```
 lm-sensors
 acpi
+
 ```
 
 ## Usage
