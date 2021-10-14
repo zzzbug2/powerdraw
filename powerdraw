@@ -12,6 +12,16 @@ while true; do
 	echo Threads: $( ps -eLf | wc -l)
 	echo RAM in use: $(free --mebi | sed -n '2{p;q}' | awk '{printf ("%2.2fGB\n", ( $3 / 1024), ($2 / 1024))}')
 
+	if [ ! -x /bin/sensors ]; then
+		echo ERROR! Sensors not found
+		exit
+	fi
+
+	if [ ! -x /bin/acpi ]; then
+		echo ERROR! ACPI not found.
+		exit
+	fi
+
 	if [[ -n acpi ]]; then
 		echo
 		acpi
