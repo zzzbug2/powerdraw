@@ -5,7 +5,6 @@ A small shell script to view battery information and CPU temperatures.
 ```
 lm-sensors
 acpi
-
 ```
 
 ## Usage
@@ -13,5 +12,4 @@ acpi
 ```
 chmod +x powerdraw
 ./powerdraw
-
 ```
