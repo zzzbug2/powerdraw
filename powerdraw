@@ -1,5 +1,53 @@
 #!/bin/sh
-awk '{print $1*10^-6 " W"}' /sys/class/power_supply/BAT0/power_now
-acpi
-cat /proc/cpuinfo | grep "cpu MHz"
-sensors
+# Author: 1ryuk
+# Date: 2021-10-13
+#
+while true; do
+	i=0
+
+	echo User: $(users)
+	echo Date: $(date +'(%a)%d/%m/%g %I:%MPM')
+	echo Uptime: $(uptime | awk 'NR ==1{print $1}')
+	echo Tasks: $(top -bn1 | grep Tasks | awk '{print $2}')
+	echo Threads: $( ps -eLf | wc -l)
+	echo RAM in use: $(free --mebi | sed -n '2{p;q}' | awk '{printf ("%2.2fGB\n", ( $3 / 1024), ($2 / 1024))}')
+
+	if [[ -n acpi ]]; then
+		echo
+		acpi
+	else
+		echo acpi not found
+	fi
+
+	if [[ -e /sys/class/power_supply/BAT0/power_now ]]; then
+		awk '{print "Battery 0: " $1*10^-6 " W"}' /sys/class/power_supply/BAT0/power_now
+	fi
+
+	if [[ -e /sys/class/power_supply/BAT1/power_now ]]; then
+		awk '{print "BAT1 " $1*10^-6 " W"}' /sys/class/power_supply/BAT1/power_now
+	fi
+
+	if [[ -n $(sensors | grep in0) ]]; then
+		sensors | grep in0 | awk {'print $2,$3'}
+	fi
+
+	if [[ -n $(sensors | grep Package) ]]; then
+	echo
+	echo CPU Temp: $(sensors | grep Package | awk '{print $4,$5}')
+	fi
+
+	if [[ -e /proc/cpuinfo ]]; then
+		echo
+		echo CPU Frequencies
+		echo
+		cat /proc/cpuinfo | grep "cpu MHz" | awk {'print $4,"MHz"'}
+	fi
+
+	if [[ -n $(sensors | grep fan) ]]; then
+	echo
+	echo Fan speed: $(sensors | grep fan | awk '{print$2,$3}')
+	fi
+
+	sleep 5
+	clear
+done
