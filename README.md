@@ -9,13 +9,18 @@ acpi
 ```
 ## Output
 ```
-User
 Date
 Uptime
 
-Tasks
-Threads
+Total Tasks/Threads (including kthr)
+
+Who
+
 RAM in use
+RAM Free
+
+SWAP in use
+SWAP Free
 
 Battery Charge
 Battery Watts drawn

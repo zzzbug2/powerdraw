@@ -10,13 +10,13 @@ while true; do
 	i=0
 
 	# User information
-	echo User: $(users)
-	echo Date: $(date +'(%a) %d/%m/%g %r')
-	echo Uptime: $(uptime | awk 'NR ==1{print $1}')
+	echo "Date:" $(date +'(%a) %l:%M:%S %p  %d/%m/%g')
+	echo "Uptime:" $(uptime -p | awk {'print $2$3, $4$5, $6$7'})
 	echo
-	echo Tasks: $(top -bn1 | grep Tasks | awk '{print $2}')
-	echo Threads: $( ps -eLf | wc -l)
-	echo RAM in use: $(free --mebi | sed -n '2{p;q}' | awk '{printf ("%2.2fGB\n", ( $3 / 1024), ($2 / 1024))}')
+	echo "Tasks/Threads:" $( ps -eLf | wc -l)
+	echo
+	echo "Users:"
+	printf "%s\n" "$(who)"
 	echo
 
 	# Battery information
@@ -77,11 +77,19 @@ while true; do
 		if [[ -n $(sensors | grep "GPU:") ]]; then
 			echo "GPU Temp" : $(sensors | grep "GPU:" | awk {'print $2,$3'})
 		elif [[ -n $(sensors | grep "GPU Core:") ]]; then
-			echo "CPU Temp" : $(sensors | grep "GPU Core:" | awk {'print $2'})
-			##
-			##
+			echo "GPU Temp" : $(sensors | grep "GPU Core:" | awk {'print $2'})
+		else
+			echo "No GPU temps were detected!"
 		fi
 	fi
+
+	# Ram information
+	echo
+	echo "RAM in use:" $(free -h --total | awk 'NR>1 && NR<3{print $3}')
+	echo "RAM Free:" $(free -h --total | awk 'NR>1 && NR<3{print $4}')
+	echo
+	echo "Swap in use:" $(free -h --total | awk 'NR>2 && NR<4{print $3}')
+	echo "Swap Free:" $(free -h --total | awk 'NR>2 && NR<4{print $4}')
 
 	# CPU frequencies
 	if [[ -n $(cat /proc/cpuinfo | grep "cpu MHz") ]]; then
