@@ -1,6 +1,6 @@
 # Powerdraw
-A small shell script to view battery information and CPU temperatures.
 
+A small shell script to view various system info on x86 systems.
 
 ## Dependencies
 ```
@@ -12,13 +12,19 @@ acpi
 User
 Date
 Uptime
+
 Tasks
 Threads
 RAM in use
-Battery charge/voltage
-Watts in/out
-CPU Temp/Frequencies
+
+Battery Charge
+Battery Watts drawn
+Battery Voltage
+
 Fan speed
+
+CPU Temp
+GPU Temp
 
 ```
 

@@ -5,9 +5,11 @@
 
 sib=$(cat /proc/cpuinfo | grep "siblings" | awk NR==1 | awk {'print $3'})
 i=0
-while true; do
 
-# User information
+while true; do
+	i=0
+
+	# User information
 	echo User: $(users)
 	echo Date: $(date +'(%a) %d/%m/%g %r')
 	echo Uptime: $(uptime | awk 'NR ==1{print $1}')
@@ -17,71 +19,82 @@ while true; do
 	echo RAM in use: $(free --mebi | sed -n '2{p;q}' | awk '{printf ("%2.2fGB\n", ( $3 / 1024), ($2 / 1024))}')
 	echo
 
-# Battery information
-# Battery Charge info
-
+	# Battery information
+	# Battery Charge info
 	if [ ! -x /bin/acpi ]; then
-		echo ERROR! ACPI not found.
-		exit
+		echo "ACPI not found!"
+		echo
+		echo "Please install the ACPI package to get CPU information"
 	else
 		echo $(acpi)
 	fi
 
-# Battery wattage
+	# Battery wattage
 	if [[ -e /sys/class/power_supply/BAT0/power_now ]]; then
-		awk '{print "Watts: " $1*10^-6 " W"}' /sys/class/power_supply/BAT0/power_now
+		echo $(awk '{print "Watts: " $1*10^-6 " W"}' /sys/class/power_supply/BAT0/power_now)
 	elif [[ -e /sys/class/power_supply/BAT1/power_now ]]; then
-		awk '{print "Watts: " $1*10^-6 " W"}' /sys/class/power_supply/BAT1/power_now
-	fi
-
-# Battery Voltage
-	if [[ -n $(sensors | grep in0) ]]; then
-		echo "Volts:" $(sensors | grep in0 | awk {'print $2,$3'})
-	fi
-
-# Check to see if lm-sensors is available.
-	if [ ! -x /bin/sensors ]; then
-		echo ERROR! Sensors not found
-		echo
-		echo Please install the lm-sensors package to get CPU infomation
-		exit
-	fi
-
-# Fan speed
-	if [[ -n $(sensors | grep fan) ]]; then
-		echo
-		echo "Fan speed" : $(sensors | grep fan | awk {'print $2,$3'})
-	fi
-
-# Sensors
-
-# CPU temp
-	if [[ -n $(sensors | grep Package) ]]; then
-		echo
-		echo "CPU Temp" : $(sensors | grep Package | awk {'print $4,$5'})
-
-	elif [[ -n $(sensors | grep CPU) ]]; then
-		echo "CPU Temp" : $(sensors | grep CPU | awk {'print $2,$3'})
-
-	elif [[ -n $(sensors | grep in0) ]]; then
-		echo $(sensors | grep in0 | awk {'print $2,$3'})
-
+		echo $(awk '{print "Watts: " $1*10^-6 " W"}' /sys/class/power_supply/BAT1/power_now)
 	else
-		echo "CPU Temp not found :("
+		echo "No battery was detected!"
 	fi
 
+	# Battery Voltage
+	if [[ -n $(sensors | grep "in0") ]]; then
+		echo "Volts:" $(sensors | grep "in0" | awk {'print $2,$3'})
+	else
+		echo "No battery voltage was detected!"
+	fi
 
-# CPU frequencies
-	if [[ -e /proc/cpuinfo ]]; then
+	# lm-sensors
+	if [ ! -x /bin/sensors ]; then
+		echo "ERROR! Sensors not found"
+		echo
+		echo "Please install the lm-sensors package to get CPU infomation"
+	else
+		# Fan speed
+		if [[ -n $(sensors | grep "fan") ]]; then
+			echo
+			echo "Fan speed" : $(sensors | grep "fan" | awk {'print $2,$3'})
+		else
+			echo "Fan not detected!"
+		fi
+
+		# CPU temp
+		if [[ -n $(sensors | grep "Package") ]]; then
+			echo
+			echo "CPU Temp" : $(sensors | grep "Package" | awk {'print $4,$5'})
+		elif [[ -n $(sensors | grep "CPU") ]]; then
+			echo
+			echo "CPU Temp" : $(sensors | grep "CPU" | awk {'print $2,$3'})
+		elif [[ -n $(sensors -u | grep "temp1_input") ]]; then
+			echo
+			echo "CPU Temp" : $(sensors -u | grep "temp1_input" | awk {'print $1'})
+		else
+			echo "No CPU temps were detected!"
+		fi
+
+		# CPU temp
+		if [[ -n $(sensors | grep "GPU:") ]]; then
+			echo "GPU Temp" : $(sensors | grep "GPU:" | awk {'print $2,$3'})
+		elif [[ -n $(sensors | grep "GPU Core:") ]]; then
+			echo "CPU Temp" : $(sensors | grep "GPU Core:" | awk {'print $2'})
+			##
+			##
+		fi
+	fi
+
+	# CPU frequencies
+	if [[ -n $(cat /proc/cpuinfo | grep "cpu MHz") ]]; then
 		echo
 		while [ $i -lt $sib ]
 		do
 			echo "CORE $i" : $(cat /proc/cpuinfo | grep "cpu MHz" | awk NR=="$i+1"{'print $4,"MHz"'})
 			i=$((i+1))
 		done
+	else
+		echo "No CPU frequencies were detected!"
 	fi
 
-
-	sleep 5
+	sleep 3
 	clear
 done
