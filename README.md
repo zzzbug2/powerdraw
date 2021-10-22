@@ -14,9 +14,13 @@ acpi
 Date
 Uptime
 
+Who
+
+Top 5 output from top
+
 Total Tasks/Threads (including kthr)
 
-Who
+Total CPU Load
 
 RAM in use
 RAM Free
@@ -33,6 +37,8 @@ Fan speed
 CPU Temp
 GPU Temp
 
+CPU Frequencies
+
 ```
 
 ## Usage
@@ -40,4 +46,5 @@ GPU Temp
 ```
 chmod +x powerdraw
 ./powerdraw
+
 ```

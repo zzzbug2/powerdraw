@@ -13,10 +13,22 @@ while true; do
 	echo "Date:" $(date +'(%a) %l:%M:%S %p  %d/%m/%g')
 	echo "Uptime:" $(uptime -p | awk {'print $2$3, $4$5, $6$7'})
 	echo
-	echo "Tasks/Threads:" $( ps -eLf | wc -l)
-	echo
 	echo "Users:"
 	printf "%s\n" "$(who)"
+	echo
+	printf "%s\n" "$(top -b -n1 | awk 'NR>6 && NR<13 {print $9,$10,$12}')"
+	echo
+	echo "Tasks/Threads:" $( ps -eLf | wc -l)
+	echo
+	printf "Total CPU Load: %s\n" "$(expr 100 - $(top -b -n 1 | grep Cpu | awk '{print $8}'|cut -f 1 -d "."))"%""
+
+	# Ram information
+	echo
+	echo "RAM in use:" $(free -h --total | awk 'NR>1 && NR<3{print $3}')
+	echo "RAM Free:" $(free -h --total | awk 'NR>1 && NR<3{print $4}')
+	echo
+	echo "Swap in use:" $(free -h --total | awk 'NR>2 && NR<4{print $3}')
+	echo "Swap Free:" $(free -h --total | awk 'NR>2 && NR<4{print $4}')
 	echo
 
 	# Battery information
@@ -24,7 +36,7 @@ while true; do
 	if [ ! -x /bin/acpi ]; then
 		echo "ACPI not found!"
 		echo
-		echo "Please install the ACPI package to get CPU information"
+		echo "Please install the ACPI package to get Battery Charge information"
 	else
 		echo $(acpi)
 	fi
@@ -47,9 +59,9 @@ while true; do
 
 	# lm-sensors
 	if [ ! -x /bin/sensors ]; then
-		echo "ERROR! Sensors not found"
+		echo "ERROR! lm-sensors not found"
 		echo
-		echo "Please install the lm-sensors package to get CPU infomation"
+		echo "Please install the lm-sensors package to get CPU/GPU Temps and Fan Speed"
 	else
 		# Fan speed
 		if [[ -n $(sensors | grep "fan") ]]; then
@@ -83,20 +95,13 @@ while true; do
 		fi
 	fi
 
-	# Ram information
-	echo
-	echo "RAM in use:" $(free -h --total | awk 'NR>1 && NR<3{print $3}')
-	echo "RAM Free:" $(free -h --total | awk 'NR>1 && NR<3{print $4}')
-	echo
-	echo "Swap in use:" $(free -h --total | awk 'NR>2 && NR<4{print $3}')
-	echo "Swap Free:" $(free -h --total | awk 'NR>2 && NR<4{print $4}')
-
 	# CPU frequencies
 	if [[ -n $(cat /proc/cpuinfo | grep "cpu MHz") ]]; then
 		echo
+		echo "CPU Frequencies"
 		while [ $i -lt $sib ]
 		do
-			echo "CORE $i" : $(cat /proc/cpuinfo | grep "cpu MHz" | awk NR=="$i+1"{'print $4,"MHz"'})
+			echo "$i" : $(cat /proc/cpuinfo | grep "cpu MHz" | awk NR=="$i+1"{'print $4,"MHz"'})
 			i=$((i+1))
 		done
 	else
