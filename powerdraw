@@ -19,8 +19,6 @@ while true; do
 	printf "%s\n" "$(top -b -n1 | awk 'NR>6 && NR<13 {print $9,$10,$12}')"
 	echo
 	echo "Tasks/Threads:" $( ps -eLf | wc -l)
-	echo
-	printf "Total CPU Load: %s\n" "$(expr 100 - $(top -b -n 1 | grep Cpu | awk '{print $8}'|cut -f 1 -d "."))"%""
 
 	# Ram information
 	echo
